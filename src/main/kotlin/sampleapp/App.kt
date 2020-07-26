@@ -13,6 +13,7 @@ import org.http4k.routing.routes
 import org.http4k.server.Undertow
 import org.http4k.server.asServer
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 fun main() {
     val rnd = Random(System.currentTimeMillis())
@@ -20,6 +21,7 @@ fun main() {
     val registry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
     val router = routes(
         "/" bind GET to {
+            TimeUnit.SECONDS.sleep(2)
             if (rnd.nextInt(100) > successRate)
                 Response(Status.SERVICE_UNAVAILABLE).body("fail")
             else
