@@ -23,11 +23,10 @@ fun main() {
             if (rnd.nextInt(100) > successRate)
                 Response(Status.SERVICE_UNAVAILABLE).body("fail")
             else
-                Response(OK)
+                Response(OK).body("OK")
         }
     )
-    val app = MetricFilters.Server.RequestCounter(registry)
-        .then(MetricFilters.Server.RequestTimer(registry))
+    val app = metricsTemplate.RequestCounter(registry, "http.requests.total")
         .then(router)
     startMetricsServer(registry)
     println("Server starting")
@@ -35,6 +34,17 @@ fun main() {
     val server = app.asServer(Undertow(8080))
     server.start()
     server.block()
+}
+
+val metricsTemplate = MetricFilters.FiltersTemplate(
+    "http.server.request.latency" to "Timing of server requests",
+    "http.requests.total" to "Total number of server requests"
+) {
+    it.copy(
+        labels = mapOf(
+            "code" to it.response.status.code.toString()
+        )
+    )
 }
 
 fun startMetricsServer(registry: PrometheusMeterRegistry) {
