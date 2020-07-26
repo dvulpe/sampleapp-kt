@@ -1,0 +1,34 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.3.72'
+    id 'java'
+}
+
+group 'org.sampleapp'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile group: "org.http4k", name: "http4k-core", version: "3.254.0"
+    compile group: "org.http4k", name: "http4k-server-undertow", version: "3.254.0"
+    compile group: "org.http4k", name: "http4k-metrics-micrometer", version: "3.254.0"
+
+    compile group: "io.micrometer", name: "micrometer-registry-prometheus", version: "1.5.2"
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "11"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "11"
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'sampleapp.AppKt'
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
