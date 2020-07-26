@@ -39,7 +39,8 @@ fun main() {
 
 fun startMetricsServer(registry: PrometheusMeterRegistry) {
     val router = routes(
-        "/healthz" bind GET to { Response(OK) },
+        "/liveness" bind GET to { Response(OK) },
+        "/readiness" bind GET to { Response(OK) },
         "/metrics" bind GET to { Response(OK).body(registry.scrape()) }
     )
     println("Starting metrics server")
